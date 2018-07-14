@@ -1,10 +1,9 @@
 #include "MatrizLed.h"
 
-MatrizLed pantalla = MatrizLed(12,11,10,2);
+MatrizLed pantalla = MatrizLed(12,11,10,2); //dataPin, clkPin, csPin, numero dispositivos
 
 void setup() {
   pantalla.begin();
-  Serial.begin(9600);
 }
 
 void loop() { 
@@ -15,7 +14,6 @@ void loop() {
   pantalla.setLed(0, 2, 4, true);
   pantalla.setLed(0, 3, 5, true);
   delay(2000);
-
 
   pantalla.borrar();
   pantalla.escribirCaracter('O' , 0);
@@ -42,6 +40,5 @@ void loop() {
   while(true){
     pantalla.escribirFraseScroll("Hola Mundo", 200);
   }
-
 
 }

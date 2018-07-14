@@ -1,25 +1,17 @@
-LedControl
+MatrizLed
 ==========
-LedControl is an [Arduino](http://arduino.cc) library for MAX7219 and MAX7221 Led display drivers.
-The code also works with the [Teensy (3.1)](https://www.pjrc.com/teensy/)
+MatrizLed es una libreria de [Arduino](http://arduino.cc) para matrices de leds de 8x8 con controladores MAX7219 o MAX7221 
+Esta libreria esta basada en [LedControl](https://github.com/wayoda/LedControl)
 
-Documentation
+Uso
 -------------
-Documentation for the library is on the [Github Project Pages](http://wayoda.github.io/LedControl/)
+En el IDE de Arduino, en ejemplos -> MatrizLed se encuentran todos los casos de uso.
 
-Download
+Descargar
 --------
-The lastest binary version of the Library is always available from the 
-[LedControl Release Page](https://github.com/wayoda/LedControl/releases) 
+La version mas actualizada se encuentra en el github de [MatrizLed](https://github.com/danidask/MatrizLed) 
 
 
-Install
+Instalación
 -------
-The library can be installed using the [standard Arduino library install procedure](http://arduino.cc/en/Guide/Libraries)  
-
-
-
-
-
-
-
+Las instrucciones para instalar librerias en arduino se encuentra [aquí](http://arduino.cc/en/Guide/Libraries) (ingles)
