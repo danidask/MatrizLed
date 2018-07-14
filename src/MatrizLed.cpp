@@ -71,16 +71,14 @@ void MatrizLed::begin(int dataPin, int clkPin, int csPin, int numDevices){
         //we go into shutdown-mode on startup
         shutdown(i,true);
     }
-    //we have already set the number of devices when we created the LedControl
-    int devices=MatrizLed::getDeviceCount();
     //we have to init all devices in a loop
-    for(int address=0;address<devices;address++) {
+    for(int address=0; address<getDeviceCount(); address++) {
         /*The MAX72XX is in power-saving mode on startup*/
-        MatrizLed::shutdown(address,false);
+        shutdown(address,false);
         /* Set the brightness to a medium values */
-        MatrizLed::setIntensity(address,8);
+        setIntensity(address,8);
         /* and clear the display */
-        MatrizLed::clearDisplay(address);
+        clearDisplay(address);
     }
 }
 
@@ -188,8 +186,8 @@ void MatrizLed::spiTransfer(int addr, volatile byte opcode, volatile byte data) 
 
 
 void MatrizLed::borrar(){
-    for(int address=0;address<MatrizLed::getDeviceCount();address++) {
-        MatrizLed::clearDisplay(address);
+    for(int address=0;address<getDeviceCount();address++) {
+        clearDisplay(address);
     }
 }
 
@@ -230,9 +228,9 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
             address++;
             posendisplay -= 8;
         }
-        if (address > MatrizLed::getDeviceCount() -1 )
+        if (address > getDeviceCount() -1 )
             return;
-        MatrizLed::setRow(address, posendisplay, codigocaracter[i]);
+        setRow(address, posendisplay, codigocaracter[i]);
     }
     
 }
@@ -240,15 +238,33 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
 
 void MatrizLed::escribirFrase(const char* frase, int posicion){
     for (size_t i=0; i < strlen(frase); i++)
-        MatrizLed::escribirCaracter(frase[i], (i*8)+posicion);
+        escribirCaracter(frase[i], (i*8)+posicion);
 }
 
 
 void MatrizLed::escribirFraseScroll(const char* frase, unsigned long pausa){
-    int inicio = MatrizLed::getDeviceCount() * 8;
+    int inicio = getDeviceCount() * 8;
     int npasos = strlen(frase) * 8;
     for(int i = inicio; i > -npasos; i--){
-        MatrizLed::escribirFrase(frase, i);
+        escribirFrase(frase, i);
         delay(pausa);
+    }
+}
+
+void MatrizLed::setIntensidad(int intensidad){
+    for(int address=0; address<getDeviceCount(); address++) {
+        setIntensity(address, intensidad);
+    }
+}
+
+void MatrizLed::apagar(){
+    for(int address=0; address<getDeviceCount(); address++) {
+        shutdown(address, true);
+    }
+}
+
+void MatrizLed::encender(){
+    for(int address=0; address<getDeviceCount(); address++) {
+        shutdown(address, false);
     }
 }

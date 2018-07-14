@@ -144,6 +144,9 @@ class MatrizLed {
         void escribirFrase(const char*, int);
         void escribirFraseScroll(const char*, unsigned long);
         void borrar();
+        void setIntensidad(int);
+        void apagar();
+        void encender();
 
         /*
          * Gets the number of devices attached to this MatrizLed.
