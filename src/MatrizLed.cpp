@@ -235,6 +235,9 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
     
 }
 
+void MatrizLed::escribirFrase(const char* frase){
+    escribirFrase(frase, 0);
+}
 
 void MatrizLed::escribirFrase(const char* frase, int posicion){
     for (size_t i=0; i < strlen(frase); i++)

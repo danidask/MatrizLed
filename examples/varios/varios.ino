@@ -7,7 +7,7 @@
 MatrizLed pantalla;
 
 void setup() {
-  pantalla.begin(12,11,10,2); // dataPin, clkPin, csPin, numero de matrices de 8x8
+  pantalla.begin(12, 11, 10, 2); // dataPin, clkPin, csPin, numero de matrices de 8x8
 }
 
 void loop() { 
@@ -27,13 +27,13 @@ void loop() {
 
   // Escribir texto estatico
   pantalla.borrar();
-  pantalla.escribirFrase("Test", 0); // Texto, posicion en la pantalla
+  pantalla.escribirFrase("Test");
   delay(2000);
   
   // Desplazar texto manualmente hacia la derecha
   pantalla.borrar();
   for(int i=0; i<10; i++){
-    pantalla.escribirFrase("1234", i);
+    pantalla.escribirFrase("1234", i); // Texto, posicion en la pantalla
     delay(500);
   }
 

@@ -7,9 +7,9 @@
 MatrizLed pantalla;
 
 void setup() {
-  pantalla.begin(12,11,10,2); // dataPin, clkPin, csPin, numero de matrices de 8x8
+  pantalla.begin(12, 11, 10, 2); // dataPin, clkPin, csPin, numero de matrices de 8x8
   pantalla.setIntensidad(12); // intensidad entre 0 y 15 (maximo brillo)
-  pantalla.escribirFrase("XX", 0);
+  pantalla.escribirFrase("XX");
 }
 
 void loop() { 
@@ -17,5 +17,4 @@ void loop() {
   pantalla.apagar(); // Apaga la pantalla (consume menos energia)
   delay(1000);
   pantalla.encender();
-
 }

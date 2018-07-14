@@ -141,6 +141,7 @@ class MatrizLed {
         MatrizLed();
         void begin(int dataPin, int clkPin, int csPin, int numDevices=1);
         void escribirCaracter(char, int);
+        void escribirFrase(const char*);
         void escribirFrase(const char*, int);
         void escribirFraseScroll(const char*, unsigned long);
         void borrar();
