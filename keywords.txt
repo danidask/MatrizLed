@@ -17,12 +17,12 @@ setScanLimit	KEYWORD2
 setIntensity	KEYWORD2
 clearDisplay	KEYWORD2
 setLed		KEYWORD2
-setRow		KEYWORD2
-setColumn	KEYWORD2
-setDigit	KEYWORD2
-setChar		KEYWORD2
+begin   KEYWORD2
+escribirCaracter    KEYWORD2
+escribirFrase   KEYWORD2
+escribirFraseScroll KEYWORD2
+borrar  KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
-
