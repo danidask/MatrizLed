@@ -1,5 +1,6 @@
 /*
- *    MatrizLed.cpp - A library for controling Leds with a MAX7219/MAX7221
+ *    Basado en https://github.com/wayoda/LedControl
+ *    A library for controling Leds with a MAX7219/MAX7221
  *    Copyright (c) 2007 Eberhard Fahle
  * 
  *    Permission is hereby granted, free of charge, to any person
@@ -43,7 +44,10 @@
 #define OP_SHUTDOWN    12
 #define OP_DISPLAYTEST 15
 
-MatrizLed::MatrizLed(int dataPin, int clkPin, int csPin, int numDevices) {
+MatrizLed::MatrizLed() {
+}
+
+void MatrizLed::begin(int dataPin, int clkPin, int csPin, int numDevices){
     SPI_MOSI=dataPin;
     SPI_CLK=clkPin;
     SPI_CS=csPin;
@@ -66,6 +70,17 @@ MatrizLed::MatrizLed(int dataPin, int clkPin, int csPin, int numDevices) {
         clearDisplay(i);
         //we go into shutdown-mode on startup
         shutdown(i,true);
+    }
+    //we have already set the number of devices when we created the LedControl
+    int devices=MatrizLed::getDeviceCount();
+    //we have to init all devices in a loop
+    for(int address=0;address<devices;address++) {
+        /*The MAX72XX is in power-saving mode on startup*/
+        MatrizLed::shutdown(address,false);
+        /* Set the brightness to a medium values */
+        MatrizLed::setIntensity(address,8);
+        /* and clear the display */
+        MatrizLed::clearDisplay(address);
     }
 }
 
@@ -172,20 +187,6 @@ void MatrizLed::spiTransfer(int addr, volatile byte opcode, volatile byte data) 
 }    
 
 
-void MatrizLed::begin(){
-    //we have already set the number of devices when we created the LedControl
-    int devices=MatrizLed::getDeviceCount();
-    //we have to init all devices in a loop
-    for(int address=0;address<devices;address++) {
-        /*The MAX72XX is in power-saving mode on startup*/
-        MatrizLed::shutdown(address,false);
-        /* Set the brightness to a medium values */
-        MatrizLed::setIntensity(address,8);
-        /* and clear the display */
-        MatrizLed::clearDisplay(address);
-    }
-}
-
 void MatrizLed::borrar(){
     for(int address=0;address<MatrizLed::getDeviceCount();address++) {
         MatrizLed::clearDisplay(address);
@@ -222,7 +223,6 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
         }
     }
 
-
     for(int i=0; i<8; i++){
         int address = 0;
         int posendisplay = posicion + i;
@@ -230,23 +230,21 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
             address++;
             posendisplay -= 8;
         }
-
         if (address > MatrizLed::getDeviceCount() -1 )
             return;
-
         MatrizLed::setRow(address, posendisplay, codigocaracter[i]);
     }
     
 }
 
+
 void MatrizLed::escribirFrase(const char* frase, int posicion){
-    for (int i=0; i < strlen(frase); i++)
+    for (size_t i=0; i < strlen(frase); i++)
         MatrizLed::escribirCaracter(frase[i], (i*8)+posicion);
 }
 
 
 void MatrizLed::escribirFraseScroll(const char* frase, unsigned long pausa){
-
     int inicio = MatrizLed::getDeviceCount() * 8;
     int npasos = strlen(frase) * 8;
     for(int i = inicio; i > -npasos; i--){

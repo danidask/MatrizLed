@@ -1,27 +1,26 @@
 #include "MatrizLed.h"
 
-MatrizLed pantalla = MatrizLed(12,11,10,2); //dataPin, clkPin, csPin, numero dispositivos
+MatrizLed pantalla;
 
 void setup() {
-  pantalla.begin();
+  pantalla.begin(12,11,10,2); // dataPin, clkPin, csPin, numero de matrices de 8x8
 }
 
 void loop() { 
   pantalla.borrar();
-  // numero pantalla, fila, columna, estado
+  pantalla.setLed(0, 1, 3, true); // numero de matriz (empezando por 0), fila, columna, estado
   pantalla.setLed(0, 0, 2, true);
-  pantalla.setLed(0, 1, 3, true);
   pantalla.setLed(0, 2, 4, true);
   pantalla.setLed(0, 3, 5, true);
   delay(2000);
 
   pantalla.borrar();
-  pantalla.escribirCaracter('O' , 0);
+  pantalla.escribirCaracter('O' , 0); // Caracter, posicion en la pantalla
   pantalla.escribirCaracter('K' , 8);
   delay(2000);
 
   pantalla.borrar();
-  pantalla.escribirFrase("Test", 0);
+  pantalla.escribirFrase("Test", 0); // Texto, posicion en la pantalla
   delay(2000);
   
   pantalla.borrar();
@@ -38,7 +37,7 @@ void loop() {
 
   pantalla.borrar();
   while(true){
-    pantalla.escribirFraseScroll("Hola Mundo", 200);
+    pantalla.escribirFraseScroll("Hola Mundo", 200); // Texto, milisegundos entre frames
   }
 
 }

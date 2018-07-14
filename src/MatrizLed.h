@@ -1,5 +1,6 @@
 /*
- *     A library for controling Leds with a MAX7219/MAX7221
+ *    Basado en https://github.com/wayoda/LedControl
+ *    A library for controling Leds with a MAX7219/MAX7221
  *    Copyright (c) 2007 Eberhard Fahle
  * 
  *    Permission is hereby granted, free of charge, to any person
@@ -30,13 +31,11 @@
 #define MatrizLed_h
 
 #include <avr/pgmspace.h>
-//#include "caracteres.h"
 #if (ARDUINO >= 100)
 #include <Arduino.h>
 #else
 #include <WProgram.h>
 #endif
-
 
 const static byte tablaCaracteresMayuscula [] PROGMEM  = {
 B00000000, B11111100, B11111110, B00010010, B00010010, B11111110, B11111100, B00000000,
@@ -109,9 +108,6 @@ B00000000, B01101100, B11111110, B10010010, B10010010, B11111110, B01101100, B00
 B00000000, B01001100, B11011110, B10010010, B10010010, B11111110, B01111100, B00000000
 };
 
-const static byte tablaSimbolosPuntuacion1 [] PROGMEM  = {
-    0, 0, 0, 0, 0, 0, 0, 0,
-};
 
 class MatrizLed {
     private :
@@ -119,7 +115,6 @@ class MatrizLed {
         byte spidata[16];
         /* Send out a single command to the device */
         void spiTransfer(int addr, byte opcode, byte data);
-
         /* We keep track of the led-status for all 8 devices in this array */
         byte status[64];
         /* Data is shifted out of this pin*/
@@ -140,11 +135,8 @@ class MatrizLed {
          * csPin		pin for selecting the device 
          * numDevices	maximum number of devices that can be controled
          */
-        MatrizLed(int dataPin, int clkPin, int csPin, int numDevices=1);
-
-
-
-        void begin();
+        MatrizLed();
+        void begin(int dataPin, int clkPin, int csPin, int numDevices=1);
         void escribirCaracter(char, int);
         void escribirFrase(const char*, int);
         void escribirFraseScroll(const char*, unsigned long);
@@ -222,11 +214,6 @@ class MatrizLed {
          */
         void setColumn(int addr, int col, byte value);
 
-
-
 };
 
 #endif	//MatrizLed.h
-
-
-
