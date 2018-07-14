@@ -37,6 +37,9 @@
 #include <WProgram.h>
 #endif
 
+// rotar imagenes
+// https://gist.github.com/danidask/f11126a3e5220f0a9f68be37008e6ef8
+
 const static byte tablaCaracteresMayuscula [] PROGMEM  = {
 B00000000, B11111100, B11111110, B00010010, B00010010, B11111110, B11111100, B00000000,
 B00000000, B11111110, B11111110, B10010010, B10010010, B11111110, B01101100, B00000000,
