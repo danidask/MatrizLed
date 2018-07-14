@@ -1,5 +1,5 @@
 /*
- *    LedControl.cpp - A library for controling Leds with a MAX7219/MAX7221
+ *    MatrizLed.cpp - A library for controling Leds with a MAX7219/MAX7221
  *    Copyright (c) 2007 Eberhard Fahle
  * 
  *    Permission is hereby granted, free of charge, to any person
@@ -25,7 +25,7 @@
  */
 
 
-#include "LedControl.h"
+#include "MatrizLed.h"
 
 //the opcodes for the MAX7221 and MAX7219
 #define OP_NOOP   0
@@ -43,7 +43,7 @@
 #define OP_SHUTDOWN    12
 #define OP_DISPLAYTEST 15
 
-LedControl::LedControl(int dataPin, int clkPin, int csPin, int numDevices) {
+MatrizLed::MatrizLed(int dataPin, int clkPin, int csPin, int numDevices) {
     SPI_MOSI=dataPin;
     SPI_CLK=clkPin;
     SPI_CS=csPin;
@@ -69,11 +69,11 @@ LedControl::LedControl(int dataPin, int clkPin, int csPin, int numDevices) {
     }
 }
 
-int LedControl::getDeviceCount() {
+int MatrizLed::getDeviceCount() {
     return maxDevices;
 }
 
-void LedControl::shutdown(int addr, bool b) {
+void MatrizLed::shutdown(int addr, bool b) {
     if(addr<0 || addr>=maxDevices)
         return;
     if(b)
@@ -82,21 +82,21 @@ void LedControl::shutdown(int addr, bool b) {
         spiTransfer(addr, OP_SHUTDOWN,1);
 }
 
-void LedControl::setScanLimit(int addr, int limit) {
+void MatrizLed::setScanLimit(int addr, int limit) {
     if(addr<0 || addr>=maxDevices)
         return;
     if(limit>=0 && limit<8)
         spiTransfer(addr, OP_SCANLIMIT,limit);
 }
 
-void LedControl::setIntensity(int addr, int intensity) {
+void MatrizLed::setIntensity(int addr, int intensity) {
     if(addr<0 || addr>=maxDevices)
         return;
     if(intensity>=0 && intensity<16)	
         spiTransfer(addr, OP_INTENSITY,intensity);
 }
 
-void LedControl::clearDisplay(int addr) {
+void MatrizLed::clearDisplay(int addr) {
     int offset;
 
     if(addr<0 || addr>=maxDevices)
@@ -108,7 +108,7 @@ void LedControl::clearDisplay(int addr) {
     }
 }
 
-void LedControl::setLed(int addr, int row, int column, boolean state) {
+void MatrizLed::setLed(int addr, int row, int column, boolean state) {
     int offset;
     byte val=0x00;
 
@@ -127,7 +127,7 @@ void LedControl::setLed(int addr, int row, int column, boolean state) {
     spiTransfer(addr, row+1,status[offset+row]);
 }
 
-void LedControl::setRow(int addr, int row, byte value) {
+void MatrizLed::setRow(int addr, int row, byte value) {
     int offset;
     if(addr<0 || addr>=maxDevices)
         return;
@@ -138,7 +138,7 @@ void LedControl::setRow(int addr, int row, byte value) {
     spiTransfer(addr, row+1,status[offset+row]);
 }
 
-void LedControl::setColumn(int addr, int col, byte value) {
+void MatrizLed::setColumn(int addr, int col, byte value) {
     byte val;
 
     if(addr<0 || addr>=maxDevices)
@@ -152,44 +152,7 @@ void LedControl::setColumn(int addr, int col, byte value) {
     }
 }
 
-void LedControl::setDigit(int addr, int digit, byte value, boolean dp) {
-    int offset;
-    byte v;
-
-    if(addr<0 || addr>=maxDevices)
-        return;
-    if(digit<0 || digit>7 || value>15)
-        return;
-    offset=addr*8;
-    v=pgm_read_byte_near(charTable + value); 
-    if(dp)
-        v|=B10000000;
-    status[offset+digit]=v;
-    spiTransfer(addr, digit+1,v);
-}
-
-void LedControl::setChar(int addr, int digit, char value, boolean dp) {
-    int offset;
-    byte index,v;
-
-    if(addr<0 || addr>=maxDevices)
-        return;
-    if(digit<0 || digit>7)
-        return;
-    offset=addr*8;
-    index=(byte)value;
-    if(index >127) {
-        //no defined beyond index 127, so we use the space char
-        index=32;
-    }
-    v=pgm_read_byte_near(charTable + index); 
-    if(dp)
-        v|=B10000000;
-    status[offset+digit]=v;
-    spiTransfer(addr, digit+1,v);
-}
-
-void LedControl::spiTransfer(int addr, volatile byte opcode, volatile byte data) {
+void MatrizLed::spiTransfer(int addr, volatile byte opcode, volatile byte data) {
     //Create an array with the data to shift out
     int offset=addr*2;
     int maxbytes=maxDevices*2;
@@ -209,3 +172,85 @@ void LedControl::spiTransfer(int addr, volatile byte opcode, volatile byte data)
 }    
 
 
+void MatrizLed::begin(){
+    //we have already set the number of devices when we created the LedControl
+    int devices=MatrizLed::getDeviceCount();
+    //we have to init all devices in a loop
+    for(int address=0;address<devices;address++) {
+        /*The MAX72XX is in power-saving mode on startup*/
+        MatrizLed::shutdown(address,false);
+        /* Set the brightness to a medium values */
+        MatrizLed::setIntensity(address,8);
+        /* and clear the display */
+        MatrizLed::clearDisplay(address);
+    }
+}
+
+void MatrizLed::borrar(){
+    for(int address=0;address<MatrizLed::getDeviceCount();address++) {
+        MatrizLed::clearDisplay(address);
+    }
+}
+
+void MatrizLed::escribirCaracter(char caracter, int posicion)
+{
+    int posicion_caracter;
+    // por defecto un asterisco
+    byte codigocaracter[]= {B00000000, B00001000, B00101010, B00011100, B01110111, B00011100, B00101010, B00001000};
+
+    if (caracter >= 'A' && caracter <= 'Z'){
+        posicion_caracter = ((int)caracter - 'A') * 8;
+        for(int i=0; i<8; i++){
+            codigocaracter[i]=pgm_read_byte_near(tablaCaracteresMayuscula+i+posicion_caracter); 
+        }
+    }
+    else if (caracter >= 'a' && caracter <= 'z'){
+        posicion_caracter = ((int)caracter - 'a') * 8;
+        for(int i=0; i<8; i++){
+            codigocaracter[i]=pgm_read_byte_near(tablaCaracteresMinuscula+i+posicion_caracter); 
+        }
+    }
+    else if (caracter >= '0' && caracter <= '9'){
+        posicion_caracter = ((int)caracter - '0') * 8;
+        for(int i=0; i<8; i++){
+            codigocaracter[i]=pgm_read_byte_near(tablaNumeros+i+posicion_caracter); 
+        }
+    }
+    else if (caracter == ' '){
+        for(int i=0; i<8; i++){
+            codigocaracter[i]=0; 
+        }
+    }
+
+
+    for(int i=0; i<8; i++){
+        int address = 0;
+        int posendisplay = posicion + i;
+        while (posendisplay > 7){
+            address++;
+            posendisplay -= 8;
+        }
+
+        if (address > MatrizLed::getDeviceCount() -1 )
+            return;
+
+        MatrizLed::setRow(address, posendisplay, codigocaracter[i]);
+    }
+    
+}
+
+void MatrizLed::escribirFrase(const char* frase, int posicion){
+    for (int i=0; i < strlen(frase); i++)
+        MatrizLed::escribirCaracter(frase[i], (i*8)+posicion);
+}
+
+
+void MatrizLed::escribirFraseScroll(const char* frase, unsigned long pausa){
+
+    int inicio = MatrizLed::getDeviceCount() * 8;
+    int npasos = strlen(frase) * 8;
+    for(int i = inicio; i > -npasos; i--){
+        MatrizLed::escribirFrase(frase, i);
+        delay(pausa);
+    }
+}
