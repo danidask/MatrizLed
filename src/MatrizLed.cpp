@@ -244,6 +244,17 @@ void MatrizLed::escribirFrase(const char* frase, int posicion){
         escribirCaracter(frase[i], (i*8)+posicion);
 }
 
+void MatrizLed::escribirCifra(int cifra, int posicion){
+    char formateado[getDeviceCount()+1]; // Array donde se almacenará el valor formateado (un caracter por pantalla caracteres mas fin de linea)
+    // sprintf con longitud dinamica no funciona en arduino :(
+    // sprintf(formateado, "%.*d", getDeviceCount(), cifra); // guardamos el valor del contador, formateado con dos espacios, como cadena de texto
+    dtostrf(cifra, getDeviceCount(), 0, formateado);
+    escribirFrase(formateado, posicion);
+}
+
+void MatrizLed::escribirCifra(int cifra){
+    escribirCifra(cifra, 0);
+}
 
 void MatrizLed::escribirFraseScroll(const char* frase, unsigned long pausa){
     int inicio = getDeviceCount() * 8;
