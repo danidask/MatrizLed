@@ -128,6 +128,8 @@ class MatrizLed {
         int SPI_CS;
         /* The maximum number of devices we use */
         int maxDevices;
+        bool rotate;
+        void rotar_caracter(uint8_t[8]);
 
     public:
         /* 
@@ -140,6 +142,7 @@ class MatrizLed {
          */
         MatrizLed();
         void begin(int dataPin, int clkPin, int csPin, int numDevices=1);
+        void rotar(bool);
         void escribirCaracter(char, int);
         void escribirFrase(const char*);
         void escribirFrase(const char*, int);

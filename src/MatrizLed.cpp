@@ -51,6 +51,7 @@ void MatrizLed::begin(int dataPin, int clkPin, int csPin, int numDevices){
     SPI_MOSI=dataPin;
     SPI_CLK=clkPin;
     SPI_CS=csPin;
+    rotate = false;
     if(numDevices<=0 || numDevices>8 )
         numDevices=8;
     maxDevices=numDevices;
@@ -80,6 +81,25 @@ void MatrizLed::begin(int dataPin, int clkPin, int csPin, int numDevices){
         /* and clear the display */
         clearDisplay(address);
     }
+}
+
+void MatrizLed::rotar(bool r){
+    rotate = r;
+}
+
+void MatrizLed::rotar_caracter(uint8_t original[8]){
+  uint8_t temporal[8] = {0,0,0,0,0,0,0,0};
+  for (int i=0; i<8; i++){
+    bitWrite(temporal[7], i, bitRead(original[i], 0));
+    bitWrite(temporal[6], i, bitRead(original[i], 1));
+    bitWrite(temporal[5], i, bitRead(original[i], 2));
+    bitWrite(temporal[4], i, bitRead(original[i], 3));
+    bitWrite(temporal[3], i, bitRead(original[i], 4));
+    bitWrite(temporal[2], i, bitRead(original[i], 5));
+    bitWrite(temporal[1], i, bitRead(original[i], 6));
+    bitWrite(temporal[0], i, bitRead(original[i], 7));
+  }
+  memcpy(original, temporal, sizeof(temporal[0])*8);
 }
 
 int MatrizLed::getDeviceCount() {
@@ -195,12 +215,12 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
 {
     int posicion_caracter;
     // por defecto un asterisco
-    byte codigocaracter[]= {B00000000, B00001000, B00101010, B00011100, B01110111, B00011100, B00101010, B00001000};
+    uint8_t codigocaracter[]= {B00000000, B00001000, B00101010, B00011100, B01110111, B00011100, B00101010, B00001000};
 
     if (caracter >= 'A' && caracter <= 'Z'){
         posicion_caracter = ((int)caracter - 'A') * 8;
         for(int i=0; i<8; i++){
-            codigocaracter[i]=pgm_read_byte_near(tablaCaracteresMayuscula+i+posicion_caracter); 
+            codigocaracter[i]=pgm_read_byte_near(tablaCaracteresMayuscula+i+posicion_caracter);
         }
     }
     else if (caracter >= 'a' && caracter <= 'z'){
@@ -221,6 +241,8 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
         }
     }
 
+    if (rotate)
+        rotar_caracter(codigocaracter);
     for(int i=0; i<8; i++){
         int address = 0;
         int posendisplay = posicion + i;
@@ -231,8 +253,8 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
         if (address > getDeviceCount() -1 )
             return;
         setRow(address, posendisplay, codigocaracter[i]);
-    }
-    
+    } 
+
 }
 
 void MatrizLed::escribirFrase(const char* frase){
@@ -240,8 +262,9 @@ void MatrizLed::escribirFrase(const char* frase){
 }
 
 void MatrizLed::escribirFrase(const char* frase, int posicion){
-    for (size_t i=0; i < strlen(frase); i++)
+    for (size_t i=0; i < strlen(frase); i++){
         escribirCaracter(frase[i], (i*8)+posicion);
+    }
 }
 
 void MatrizLed::escribirCifra(int cifra, int posicion){
@@ -262,7 +285,7 @@ void MatrizLed::escribirFraseScroll(const char* frase, unsigned long pausa){
     for(int i = inicio; i > -npasos; i--){
         escribirFrase(frase, i);
         delay(pausa);
-    }
+    }     
 }
 
 void MatrizLed::setIntensidad(int intensidad){
