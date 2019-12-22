@@ -241,19 +241,38 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
         }
     }
 
-    if (rotate)
-        rotar_caracter(codigocaracter);
-    for(int i=0; i<8; i++){
-        int address = 0;
-        int posendisplay = posicion + i;
-        while (posendisplay > 7){
-            address++;
-            posendisplay -= 8;
-        }
-        if (address > getDeviceCount() -1 )
-            return;
-        setRow(address, posendisplay, codigocaracter[i]);
-    } 
+    // if (rotate)
+    //     rotar_caracter(codigocaracter);
+    if (!rotate){
+        for(int i=0; i<8; i++){
+            int address = 0;
+            int posendisplay = posicion + i;
+            while (posendisplay > 7){
+                address++;
+                posendisplay -= 8;
+            }
+            if (address > getDeviceCount() -1 )
+                return;
+            setRow(address, posendisplay, codigocaracter[i]);
+            
+        } 
+    }
+    else{
+        posicion = ((getDeviceCount()-2)*8)-posicion;
+        
+        for(int i=7; i>=0; i--){
+            int address = getDeviceCount()-1;
+            int posendisplay = posicion + 7 - i;
+            while (posendisplay < 0){
+                address--;
+                posendisplay += 8;
+            }
+            if (address > getDeviceCount() -1 )
+                return;
+            setColumn(address, posendisplay, codigocaracter[i]);
+            
+        } 
+    }
 
 }
 
