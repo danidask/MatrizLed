@@ -240,7 +240,6 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
             codigocaracter[i]=0; 
         }
     }
-
     // if (rotate)
     //     rotar_caracter(codigocaracter);
     if (!rotate){
@@ -258,22 +257,19 @@ void MatrizLed::escribirCaracter(char caracter, int posicion)
         } 
     }
     else{
-        posicion = ((getDeviceCount()-2)*8)-posicion;
-        
+        posicion = ((getDeviceCount()-1)*8)-posicion-1;
         for(int i=7; i>=0; i--){
             int address = getDeviceCount()-1;
-            int posendisplay = posicion + 7 - i;
+            int posendisplay = posicion - i;
             while (posendisplay < 0){
                 address--;
                 posendisplay += 8;
             }
-            if (address > getDeviceCount() -1 )
+            if (address < -1)
                 return;
             setColumn(address, posendisplay, codigocaracter[i]);
-            
         } 
     }
-
 }
 
 void MatrizLed::escribirFrase(const char* frase){
